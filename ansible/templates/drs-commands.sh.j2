@@ -1,0 +1,91 @@
+#!/bin/bash
+
+# DRS Validation Framework - Quick Management Commands
+
+case "$1" in
+    status)
+        echo "=== DRS Validation Framework Status ==="
+        echo "System Service:"
+        systemctl status drs-validation --no-pager -l
+        echo
+        echo "Docker Containers:"
+        cd {{ app_dir }} && docker compose ps
+        echo
+        echo "Resource Usage:"
+        echo "CPU: $(top -bn1 | grep "Cpu(s)" | awk '{print $2}')"
+        echo "Memory: $(free -h | grep Mem | awk '{print $3"/"$2}')"
+        echo "Disk: $(df -h {{ base_dir }} | awk 'NR==2{print $3"/"$2" ("$5" used)"}')"
+        ;;
+    logs)
+        echo "=== DRS Service Logs (last 50 lines) ==="
+        journalctl -u drs-validation -n 50 --no-pager
+        ;;
+    docker-logs)
+        echo "=== Docker Container Logs (last 50 lines) ==="
+        cd {{ app_dir }} && docker compose logs --tail=50
+        ;;
+    restart)
+        echo "🔄 Restarting DRS Validation Framework..."
+        systemctl restart drs-validation
+        sleep 10
+        echo "✅ Restart completed"
+        $0 status
+        ;;
+    stop)
+        echo "🛑 Stopping DRS Validation Framework..."
+        systemctl stop drs-validation
+        echo "✅ Service stopped"
+        ;;
+    start)
+        echo "🚀 Starting DRS Validation Framework..."
+        systemctl start drs-validation
+        sleep 10
+        echo "✅ Service started"
+        $0 status
+        ;;
+    health)
+        echo "🏥 Running health check..."
+        {{ base_dir }}/scripts/health-monitor.sh
+        if [ $? -eq 0 ]; then
+            echo "✅ Health check: PASSED"
+        else
+            echo "❌ Health check: FAILED"
+        fi
+        ;;
+    backup)
+        echo "💾 Creating backup..."
+        {{ base_dir }}/scripts/backup.sh
+        ;;
+    update)
+        echo "🔄 Updating DRS containers..."
+        cd {{ app_dir }}
+        docker compose pull
+        docker compose up -d --build
+        echo "✅ Update completed"
+        ;;
+    monitor)
+        echo "📊 Real-time monitoring (Ctrl+C to exit)..."
+        watch -n 5 "echo '=== DRS Status ==='; systemctl is-active drs-validation; echo; echo '=== Resource Usage ==='; free -h | head -2; echo; df -h {{ base_dir }} | tail -1"
+        ;;
+    *)
+        echo "🔧 DRS Validation Framework - Management Commands"
+        echo
+        echo "Usage: $0 {status|logs|docker-logs|restart|stop|start|health|backup|update|monitor}"
+        echo
+        echo "Available commands:"
+        echo "  status      - Show comprehensive system status"
+        echo "  logs        - Show systemd service logs"
+        echo "  docker-logs - Show Docker container logs"
+        echo "  restart     - Restart the DRS service"
+        echo "  stop        - Stop the DRS service"
+        echo "  start       - Start the DRS service"
+        echo "  health      - Run health check"
+        echo "  backup      - Create manual backup"
+        echo "  update      - Update Docker containers"
+        echo "  monitor     - Real-time resource monitoring"
+        echo
+        echo "🌐 Web Interface: http://{{ ansible_default_ipv4.address | default(ansible_host) }}:{{ app_port }}"
+        echo "📊 Health Check: http://{{ ansible_default_ipv4.address | default(ansible_host) }}:{{ app_port }}/health"
+        echo "📚 API Documentation: http://{{ ansible_default_ipv4.address | default(ansible_host) }}:{{ app_port }}/docs"
+        ;;
+esac

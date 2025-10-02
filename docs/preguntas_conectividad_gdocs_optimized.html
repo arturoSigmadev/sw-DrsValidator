@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preguntas Técnicas: Conectividad Tarjetas Digitales</title>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            line-height: 1.6; 
+            max-width: 800px; 
+            margin: 0 auto; 
+            padding: 20px;
+            color: #333;
+        }
+        h1, h2, h3, h4 { color: #2c3e50; }
+        h1 { border-bottom: 3px solid #3498db; padding-bottom: 10px; }
+        h2 { border-bottom: 2px solid #95a5a6; padding-bottom: 5px; }
+        ul, ol { padding-left: 20px; }
+        li { margin-bottom: 5px; }
+        code { 
+            background-color: #f8f9fa; 
+            padding: 2px 5px; 
+            border-radius: 3px; 
+            font-family: 'Courier New', monospace;
+        }
+        .command-list {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-left: 4px solid #3498db;
+            margin: 10px 0;
+        }
+        .note {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .reference {
+            background-color: #e8f5e9;
+            border: 1px solid #4caf50;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+<h1>Preguntas Técnicas: Conectividad Tarjetas Digitales VHF, P25 y LC500</h1>
+<br/>
+<h2>Contexto del Sistema</h2>
+<br/>
+<h3>Arquitectura</h3>
+
+<div style="border: 2px solid #4CAF50; padding: 20px; margin: 10px 0; background-color: #f8f9fa;">
+    <h4 style="color: #2E7D32;">🏗️ Arquitectura General del Sistema</h4>
+    <ul>
+        <li><strong>Software de Validación (Nuestro)</strong> → TCP/IP Puerto 65050</li>
+        <li><strong>Sistemas Independientes por Banda:</strong>
+            <ul>
+                <li>🟢 <strong>VHF:</strong> Master Digital Board → Fibra Óptica → Remoto → LNA/PA (Compatible)</li>
+                <li>🟢 <strong>P25:</strong> Master Digital Board → Fibra Óptica → Remoto → LNA/PA (Compatible)</li>
+                <li>🔴 <strong>LC500:</strong> Master Digital Board → Fibra Óptica → Remoto → LNA/PA (No Compatible)</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<br/>
+<p><strong>NOTA<strong>: Cada banda (VHF, P25, LC500) tiene su propio Master Digital Board y funciona como sistema independiente</p>
+<br/>
+<h3>Versiones de Software</h3>
+<ul>
+<li><strong>VHF<strong>: 231016-BB1-145-15M-16C-OP8 ✅ Compatible TCP</li>
+<ul>
+<li><strong>P25<strong>: 231115-BB1-806D851M-18M-16C-OP8 ✅ Compatible TCP  </li>
+<ul>
+<li><strong>LC500<strong>: FPGA:250529-16A, Software:250530-05, Kernel:210909 ❌ No compatible TCP</li>
+<br/>
+<h3>Componentes LNA/PA</h3>
+<ul>
+<li><strong>Conexión<strong>: Puerto JP1 pines 5,7 via cable DB9↔IDC-10pin</li>
+<ul>
+<li><strong>Problema<strong>: Software nativo del remoto NO lee parámetros LNA/PA</li>
+<ul>
+<li><strong>Objetivo<strong>: Monitoreo integrado via TCP/IP</li>
+<br/>
+<hr/>
+<br/>
+<h2>Preguntas Técnicas</h2>
+<br/>
+<h3>1. Monitoreo LNA/PA</h3>
+<br/>
+<p><strong>Arquitectura del Problema:<strong></p>
+
+<div style="border: 2px solid #FF9800; padding: 20px; margin: 10px 0; background-color: #fff3e0;">
+    <h4 style="color: #E65100;">⚠️ Diagrama de Conectividad LNA/PA</h4>
+    <ol>
+        <li><strong>Software de Validación</strong> → TCP/IP Puerto 65050 → <strong>Master Digital Board (VHF/P25)</strong></li>
+        <li><strong>Master Digital Board</strong> → Fibra Óptica → <strong>Remoto Digital Board</strong></li>
+        <li><strong>Remoto Digital Board</strong> → Cable DB9↔IDC-10pin Puerto JP1 (pines 5,7) → <strong>LNA/PA</strong></li>
+    </ol>
+    <p style="color: #d32f2f; font-weight: bold;">❌ PROBLEMA: Software nativo del remoto NO lee parámetros LNA/PA</p>
+</div>
+
+<br/>
+<p><strong>PROBLEMA<strong>: Software nativo del remoto NO lee parámetros LNA/PA  </p>
+<p><strong>OBJETIVO<strong>: Monitoreo integrado via TCP/IP</p>
+<br/>
+<p><strong>Preguntas:<strong></p>
+<ul>
+<li>¿Existen comandos específicos en "Protocol _TT_2023_8_30.pdf" para LNA y PA?</li>
+<ul>
+<li>¿Se puede usar puerto 65050 para monitorear LNA/PA?</li>
+<ul>
+<li>¿Por qué el software nativo del remoto no lee parámetros LNA via DB9-IDC 10pin?</li>
+<ul>
+<li>¿Es posible transportar comandos LNA/PA a través de: Master → Fibra → Remoto → TCP/IP?</li>
+<ul>
+<li>¿Se requiere configuración especial en master/remoto para habilitar comunicación LNA/PA?</li>
+<ul>
+<li>¿Los archivos .rar VHF/P25 incluyen comandos de monitoreo para LNA/PA?</li>
+<br/>
+<h3>2. Compatibilidad LC500</h3>
+<br/>
+<p><strong>Arquitectura del Problema:<strong></p>
+
+<div style="border: 2px solid #F44336; padding: 20px; margin: 10px 0; background-color: #ffebee;">
+    <h4 style="color: #C62828;">❌ Diagrama de Incompatibilidad LC500</h4>
+    <ul>
+        <li><strong>Software de Validación</strong> → TCP/IP Puerto 65050 → <strong>Master Digital Board (LC500)</strong> ❌ No Compatible</li>
+        <li><strong>Master Digital Board</strong> → Fibra Óptica → <strong>Remoto Digital Board (LC500)</strong> ❌ No Compatible</li>
+    </ul>
+    <p style="color: #d32f2f; font-weight: bold;">🚫 PROBLEMA: LC500 no soporta protocolo TCP Puerto 65050</p>
+</div>
+
+<br/>
+<p><strong>PROBLEMA<strong>: LC500 no soporta protocolo TCP Puerto 65050  </p>
+<p><strong>OBJETIVO<strong>: Hacer LC500 compatible con sistema de monitoreo</p>
+<br/>
+<p><strong>Preguntas:<strong></p>
+<ul>
+<li>¿LC500 soporta los mismos comandos TCP que VHF/P25 via fibra óptica?</li>
+<ul>
+<li>¿Es compatible con puerto 65050 en master digital board?</li>
+<ul>
+<li>¿Qué modificaciones requiere LC500 para compatibilidad TCP?</li>
+<ul>
+<li>¿Hay que actualizar LC500 a versiones compatibles con VHF/P25?</li>
+<br/>
+<h3>3. Estandarización</h3>
+<br/>
+<p><strong>Arquitectura de Versiones:<strong></p>
+
+<div style="border: 2px solid #2196F3; padding: 20px; margin: 10px 0; background-color: #e3f2fd;">
+    <h4 style="color: #1565C0;">🔄 Diagrama de Estandarización de Versiones</h4>
+    <table style="width: 100%; border-collapse: collapse;">
+        <tr style="background-color: #f5f5f5;">
+            <th style="border: 1px solid #ddd; padding: 8px;">Tarjeta</th>
+            <th style="border: 1px solid #ddd; padding: 8px;">Versión Actual</th>
+            <th style="border: 1px solid #ddd; padding: 8px;">Estado</th>
+            <th style="border: 1px solid #ddd; padding: 8px;">Objetivo</th>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;"><strong>VHF</strong></td>
+            <td style="border: 1px solid #ddd; padding: 8px;">231016-BB1-145-15M-16C-OP8</td>
+            <td style="border: 1px solid #ddd; padding: 8px; color: #4CAF50;">✅ Funciona</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">Versión Estandarizada</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;"><strong>P25</strong></td>
+            <td style="border: 1px solid #ddd; padding: 8px;">231115-BB1-806D851M-18M-16C-OP8</td>
+            <td style="border: 1px solid #ddd; padding: 8px; color: #4CAF50;">✅ Funciona</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">Versión Estandarizada</td>
+        </tr>
+        <tr>
+            <td style="border: 1px solid #ddd; padding: 8px;"><strong>LC500</strong></td>
+            <td style="border: 1px solid #ddd; padding: 8px;">FPGA:250529-16A<br/>Software:250530-05<br/>Kernel:210909</td>
+            <td style="border: 1px solid #ddd; padding: 8px; color: #F44336;">❌ No Compatible</td>
+            <td style="border: 1px solid #ddd; padding: 8px;">Versión Actualizada</td>
+        </tr>
+    </table>
+</div>
+
+<br/>
+<p><strong>PROBLEMA<strong>: Diferentes versiones complican mantenimiento y compatibilidad  </p>
+<p><strong>OBJETIVO<strong>: Estandarizar versiones para monitoreo unificado</p>
+<br/>
+<p><strong>Preguntas:<strong></p>
+<ul>
+<li>¿Es posible usar las mismas versiones VHF/P25 en todas las tarjetas?</li>
+<ul>
+<li>¿Mejoraría esto la compatibilidad del monitoreo TCP?</li>
+<ul>
+<li>¿Hay implicaciones técnicas en estandarizar versiones?</li>
+<br/>
+<h2>Comandos de Monitoreo Requeridos (13 comandos TCP)</h2>
+<ul>
+<li><code>temperature<code> (0x02), <code>device_id<code> (0x97), <code>datt<code> (0x09)</li>
+<ul>
+<li><code>input_and_output_power<code> (0xF3), <code>channel_switch<code> (0x42)</li>
+<ul>
+<li><code>channel_frequency_configuration<code> (0x36), <code>central_frequency_point<code> (0xEB)</li>
+<ul>
+<li><code>subband_bandwidth<code> (0xED), <code>broadband_switching<code> (0x81)</li>
+<ul>
+<li><code>optical_port_switch<code> (0x91), <code>optical_port_status<code> (0x9A)</li>
+<ul>
+<li><code>optical_port_devices_connected_1<code> (0xF8), <code>optical_port_devices_connected_2<code> (0xF9)</li>
+<br/>
+<h2>Archivos de Referencia</h2>
+<ul>
+<li><code>Protocol _TT_2023_8_30.pdf<code> ✅ Protocolo principal (funciona)</li>
+<ul>
+<li><code>Santone module monitor protocol_2023_8_15.pdf<code> ❌ No funciona</li>
+<ul>
+<li><code>VHF - 231016-BB1-145-15M-16C-OP8.rar<code>, <code>P25 - 231115-BB1-806D851M-18M-16C-OP8.rar<code></li>
+<ul>
+<li><code>LNA_VHF_Technical Specification (1).pdf<code></li>
+<br/>
+<hr/>
+<p>*Versión: 2.2 - Diagramas Mermaid por pregunta*</content></p>
+<p><parameter name="filePath">/home/arturo/sw-drsmonitoring/validation-framework/docs/preguntas_conectividad_tarjetas_digitales.md</p>
+</body>
+</html>

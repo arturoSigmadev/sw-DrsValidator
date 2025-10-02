@@ -1,0 +1,99 @@
+#!/bin/bash
+
+# DRS Validation Framework - Backup Script
+# Creates incremental backups of application data
+
+BACKUP_DIR="{{ backup_dir }}"
+LOG_FILE="{{ logs_dir }}/backup.log"
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+BACKUP_FILE="drs_backup_$TIMESTAMP.tar.gz"
+RETENTION_DAYS=30
+
+log_message() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+}
+
+create_backup() {
+    log_message "Starting backup creation..."
+    
+    # Stop application gracefully
+    systemctl stop drs-validation
+    sleep 5
+    
+    # Create backup
+    tar -czf "$BACKUP_DIR/$BACKUP_FILE" \
+        --exclude='{{ logs_dir }}/*.log' \
+        --exclude='{{ data_dir }}/temp/*' \
+        --exclude='{{ app_dir }}/__pycache__' \
+        -C {{ base_dir }} \
+        app config data scripts
+    
+    local backup_result=$?
+    
+    # Restart application
+    systemctl start drs-validation
+    
+    if [ $backup_result -eq 0 ]; then
+        local backup_size=$(du -h "$BACKUP_DIR/$BACKUP_FILE" | cut -f1)
+        log_message "SUCCESS: Backup created successfully - $BACKUP_FILE (${backup_size})"
+    else
+        log_message "ERROR: Backup creation failed"
+        return 1
+    fi
+}
+
+cleanup_old_backups() {
+    log_message "Cleaning up old backups..."
+    
+    # Remove backups older than retention period
+    find "$BACKUP_DIR" -name "drs_backup_*.tar.gz" -mtime +$RETENTION_DAYS -delete
+    
+    # Keep at least the 5 most recent backups
+    local backup_count=$(ls -1 "$BACKUP_DIR"/drs_backup_*.tar.gz 2>/dev/null | wc -l)
+    if [ $backup_count -gt 5 ]; then
+        ls -t "$BACKUP_DIR"/drs_backup_*.tar.gz | tail -n +6 | xargs rm -f
+    fi
+    
+    local remaining_backups=$(ls -1 "$BACKUP_DIR"/drs_backup_*.tar.gz 2>/dev/null | wc -l)
+    log_message "Cleanup completed - $remaining_backups backups remaining"
+}
+
+verify_backup() {
+    log_message "Verifying backup integrity..."
+    
+    if tar -tzf "$BACKUP_DIR/$BACKUP_FILE" > /dev/null 2>&1; then
+        log_message "SUCCESS: Backup verification passed"
+    else
+        log_message "ERROR: Backup verification failed"
+        return 1
+    fi
+}
+
+main() {
+    log_message "=== DRS Backup Process Started ==="
+    
+    # Create backup directory if it doesn't exist
+    mkdir -p "$BACKUP_DIR"
+    
+    # Check available disk space
+    local available_space=$(df "$BACKUP_DIR" | awk 'NR==2 {print $4}')
+    if [ $available_space -lt 1000000 ]; then  # Less than 1GB
+        log_message "WARNING: Low disk space available: ${available_space}KB"
+    fi
+    
+    # Create backup
+    if create_backup; then
+        if verify_backup; then
+            cleanup_old_backups
+            log_message "=== DRS Backup Process Completed Successfully ==="
+        else
+            log_message "=== DRS Backup Process Failed - Verification Error ==="
+            exit 1
+        fi
+    else
+        log_message "=== DRS Backup Process Failed - Creation Error ==="
+        exit 1
+    fi
+}
+
+main "$@"

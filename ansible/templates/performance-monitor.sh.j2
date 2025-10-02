@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# DRS Validation Framework - Performance Monitor  
+# Monitors system performance metrics
+
+LOG_FILE="{{ logs_dir }}/performance-monitor.log"
+
+log_metric() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+}
+
+collect_metrics() {
+    # System metrics
+    local cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | sed 's/%us,//')
+    local mem_total=$(free -m | grep Mem | awk '{print $2}')
+    local mem_used=$(free -m | grep Mem | awk '{print $3}')
+    local mem_usage=$(free | grep Mem | awk '{printf "%.1f", $3/$2 * 100.0}')
+    local disk_usage=$(df {{ base_dir }} | awk 'NR==2 {print $5}' | sed 's/%//')
+    
+    # Network stats
+    local network_rx=$(cat /sys/class/net/eth0/statistics/rx_bytes 2>/dev/null || echo 0)
+    local network_tx=$(cat /sys/class/net/eth0/statistics/tx_bytes 2>/dev/null || echo 0)
+    
+    # Docker container stats
+    if command -v docker &> /dev/null; then
+        local container_stats=$(docker stats --no-stream --format "{{ '{{' }}.CPUPerc{{ '}}' }},{{ '{{' }}.MemUsage{{ '}}' }}" {{ docker_container_name }} 2>/dev/null || echo "N/A,N/A")
+    fi
+    
+    # Log all metrics
+    log_metric "SYSTEM - CPU: ${cpu_usage}%, MEM: ${mem_usage}% (${mem_used}/${mem_total}MB), DISK: ${disk_usage}%"
+    log_metric "NETWORK - RX: ${network_rx} bytes, TX: ${network_tx} bytes"
+    log_metric "CONTAINER - Stats: ${container_stats}"
+    
+    # Application-specific metrics
+    if curl -s "http://localhost:{{ app_port }}/health" > /dev/null 2>&1; then
+        local app_response_time=$(curl -s -w "%{time_total}" -o /dev/null "http://localhost:{{ app_port }}/health")
+        log_metric "APPLICATION - Response time: ${app_response_time}s, Status: UP"
+    else
+        log_metric "APPLICATION - Status: DOWN"
+    fi
+}
+
+# Run metrics collection
+collect_metrics

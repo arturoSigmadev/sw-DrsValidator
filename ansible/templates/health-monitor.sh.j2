@@ -1,0 +1,111 @@
+#!/bin/bash
+
+# DRS Validation Framework - Health Monitor
+# Monitors system and application health
+
+LOG_FILE="{{ logs_dir }}/health-monitor.log"
+HEALTH_ENDPOINT="http://localhost:{{ app_port }}/health"
+ALERT_THRESHOLD_CPU=80
+ALERT_THRESHOLD_MEM=85
+ALERT_THRESHOLD_DISK=90
+
+log_message() {
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+}
+
+check_docker_service() {
+    if ! systemctl is-active --quiet docker; then
+        log_message "ERROR: Docker service is not running"
+        return 1
+    fi
+    return 0
+}
+
+check_drs_service() {
+    if ! systemctl is-active --quiet drs-validation; then
+        log_message "ERROR: DRS validation service is not running"
+        return 1
+    fi
+    return 0
+}
+
+check_containers() {
+    cd "{{ app_dir }}"
+    
+    if ! docker compose ps --format json | grep -q '"State":"running"'; then
+        log_message "ERROR: DRS containers are not running"
+        return 1
+    fi
+    
+    if docker compose ps --format json | grep -q '"Health":"unhealthy"'; then
+        log_message "WARNING: Some containers are unhealthy"
+        return 2
+    fi
+    
+    return 0
+}
+
+check_api_health() {
+    local response_code=$(curl -s -o /dev/null -w "%{http_code}" "$HEALTH_ENDPOINT" || echo "000")
+    
+    if [ "$response_code" != "200" ]; then
+        log_message "ERROR: API health check failed (HTTP $response_code)"
+        return 1
+    fi
+    
+    return 0
+}
+
+check_system_resources() {
+    # CPU usage
+    local cpu_usage=$(top -bn1 | grep "Cpu(s)" | awk '{print $2}' | sed 's/%us,//' | cut -d'%' -f1)
+    
+    # Memory usage  
+    local mem_usage=$(free | grep Mem | awk '{printf "%.0f", $3/$2 * 100.0}')
+    
+    # Disk usage
+    local disk_usage=$(df {{ base_dir }} | awk 'NR==2 {print $5}' | sed 's/%//')
+    
+    if (( $(echo "$cpu_usage > $ALERT_THRESHOLD_CPU" | bc -l 2>/dev/null || echo 0) )); then
+        log_message "WARNING: High CPU usage: ${cpu_usage}%"
+    fi
+    
+    if (( mem_usage > ALERT_THRESHOLD_MEM )); then
+        log_message "WARNING: High memory usage: ${mem_usage}%"
+    fi
+    
+    if (( disk_usage > ALERT_THRESHOLD_DISK )); then
+        log_message "CRITICAL: High disk usage: ${disk_usage}%"
+    fi
+}
+
+main() {
+    local exit_code=0
+    local warnings=0
+    
+    # Test mode
+    if [ "$1" == "--test" ]; then
+        echo "Health monitor test - OK"
+        exit 0
+    fi
+    
+    log_message "Starting health check..."
+    
+    check_docker_service || exit_code=1
+    check_drs_service || exit_code=1
+    check_containers || { [ $? -eq 1 ] && exit_code=1 || warnings=1; }
+    check_api_health || exit_code=1
+    check_system_resources
+    
+    if [ $exit_code -eq 0 ] && [ $warnings -eq 0 ]; then
+        log_message "SUCCESS: All health checks passed"
+    elif [ $exit_code -eq 0 ]; then
+        log_message "WARNING: Some warnings detected"  
+    else
+        log_message "CRITICAL: Health check failed"
+    fi
+    
+    exit $exit_code
+}
+
+main "$@"

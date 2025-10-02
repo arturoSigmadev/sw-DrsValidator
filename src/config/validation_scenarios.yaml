@@ -1,0 +1,96 @@
+# Configuración de escenarios de validación para técnicos
+# Basado en las configuraciones de launch.json
+
+validation_scenarios:
+- id: "dmu_basic_check"
+  name: "DMU Basic Communication Test"
+  description: "Verificar comunicación básica con dispositivo DMU"
+  device_config:
+    device_type: "dmu_ethernet"
+    default_ip: "192.168.11.22"
+    default_hostname: "dmu"
+    cmd_type: "group_query"
+    thresholds:
+      warning_downlink: 38
+      warning_temperature: 45
+      warning_uplink: 38
+      critical_downlink: 41
+      critical_temperature: 50
+      critical_uplink: 31
+  validation_criteria:
+    must_connect: true
+    response_timeout_seconds: 10
+    expected_response_format: "binary"
+    temperature_range: [ 10, 60 ] # Celsius
+    signal_range: [ -60, 0 ] # dBm
+  modes:
+    mock: true # Puede ejecutarse en modo simulado
+    live: true # Puede ejecutarse con dispositivo real
+  enabled: true
+
+- id: "dru_remote_check"
+  name: "DRU Remote Device Test"
+  description: "Verificar dispositivo DRU remoto"
+  device_config:
+    device_type: "dru_ethernet"
+    default_ip: "192.168.11.100"
+    default_hostname: "dru34132"
+    cmd_type: "group_query"
+    command: 155
+    optical_port: 1
+    thresholds:
+      warning_downlink: 38
+      warning_temperature: 45
+      warning_uplink: 38
+      critical_downlink: 41
+      critical_temperature: 50
+      critical_uplink: 31
+  validation_criteria:
+    must_connect: true
+    response_timeout_seconds: 15 # Remoto puede ser más lento
+    expected_response_format: "binary"
+    temperature_range: [ 10, 60 ]
+    signal_range: [ -60, 0 ]
+  modes:
+    mock: true
+    live: true
+  enabled: true
+
+- id: "device_discovery"
+  name: "Device Discovery Process"
+  description: "Proceso de descubrimiento automático de dispositivos"
+  device_config:
+    device_type: "discovery_ethernet"
+    default_ip: "192.168.11.22"
+    default_hostname: "dmu"
+    cmd_type: "group_query"
+  validation_criteria:
+    must_connect: true
+    response_timeout_seconds: 20 # Discovery puede ser lento
+    expected_response_format: "discovery_data"
+    discovery_timeout: 30
+  modes:
+    mock: true
+    live: true
+  enabled: true
+
+# Configuración de modos de validación
+validation_modes:
+  mock:
+    description: "Modo simulado - sin dispositivos reales"
+    use_case: "Validación de instalación, pruebas sin hardware"
+    mock_responses_file: "mock_device_responses.yaml"
+
+  live:
+    description: "Modo en vivo - con dispositivos conectados"
+    use_case: "Validación en campo con dispositivos reales"
+    network_timeout: 30
+    max_retries: 3
+
+# Configuración de reportes para técnicos  
+reporting:
+  formats: [ "html", "pdf", "json" ]
+  include_technical_details: false # Reportes simplificados para técnicos
+  include_recommendations: true # Incluir acciones recomendadas
+  auto_save: true
+  retention_days: 30

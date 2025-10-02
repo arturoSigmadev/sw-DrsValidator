@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>preguntas_conectividad_tarjetas_digitales.md</title>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+
+<style>
+/* https://github.com/microsoft/vscode/blob/master/extensions/markdown-language-features/media/markdown.css */
+/*---------------------------------------------------------------------------------------------
+ *  Copyright (c) Microsoft Corporation. All rights reserved.
+ *  Licensed under the MIT License. See License.txt in the project root for license information.
+ *--------------------------------------------------------------------------------------------*/
+
+body {
+	font-family: var(--vscode-markdown-font-family, -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif);
+	font-size: var(--vscode-markdown-font-size, 14px);
+	padding: 0 26px;
+	line-height: var(--vscode-markdown-line-height, 22px);
+	word-wrap: break-word;
+}
+
+#code-csp-warning {
+	position: fixed;
+	top: 0;
+	right: 0;
+	color: white;
+	margin: 16px;
+	text-align: center;
+	font-size: 12px;
+	font-family: sans-serif;
+	background-color:#444444;
+	cursor: pointer;
+	padding: 6px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.25);
+}
+
+#code-csp-warning:hover {
+	text-decoration: none;
+	background-color:#007acc;
+	box-shadow: 2px 2px 2px rgba(0,0,0,.25);
+}
+
+body.scrollBeyondLastLine {
+	margin-bottom: calc(100vh - 22px);
+}
+
+body.showEditorSelection .code-line {
+	position: relative;
+}
+
+body.showEditorSelection .code-active-line:before,
+body.showEditorSelection .code-line:hover:before {
+	content: "";
+	display: block;
+	position: absolute;
+	top: 0;
+	left: -12px;
+	height: 100%;
+}
+
+body.showEditorSelection li.code-active-line:before,
+body.showEditorSelection li.code-line:hover:before {
+	left: -30px;
+}
+
+.vscode-light.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.15);
+}
+
+.vscode-light.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(0, 0, 0, 0.40);
+}
+
+.vscode-light.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-dark.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.vscode-dark.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 255, 255, 0.60);
+}
+
+.vscode-dark.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+.vscode-high-contrast.showEditorSelection .code-active-line:before {
+	border-left: 3px solid rgba(255, 160, 0, 0.7);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line:hover:before {
+	border-left: 3px solid rgba(255, 160, 0, 1);
+}
+
+.vscode-high-contrast.showEditorSelection .code-line .code-line:hover:before {
+	border-left: none;
+}
+
+img {
+	max-width: 100%;
+	max-height: 100%;
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 1px solid -webkit-focus-ring-color;
+	outline-offset: -1px;
+}
+
+hr {
+	border: 0;
+	height: 2px;
+	border-bottom: 2px solid;
+}
+
+h1 {
+	padding-bottom: 0.3em;
+	line-height: 1.2;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+}
+
+h1, h2, h3 {
+	font-weight: normal;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table > thead > tr > th {
+	text-align: left;
+	border-bottom: 1px solid;
+}
+
+table > thead > tr > th,
+table > thead > tr > td,
+table > tbody > tr > th,
+table > tbody > tr > td {
+	padding: 5px 10px;
+}
+
+table > tbody > tr + tr > td {
+	border-top: 1px solid;
+}
+
+blockquote {
+	margin: 0 7px 0 5px;
+	padding: 0 16px 0 10px;
+	border-left-width: 5px;
+	border-left-style: solid;
+}
+
+code {
+	font-family: Menlo, Monaco, Consolas, "Droid Sans Mono", "Courier New", monospace, "Droid Sans Fallback";
+	font-size: 1em;
+	line-height: 1.357em;
+}
+
+body.wordWrap pre {
+	white-space: pre-wrap;
+}
+
+pre:not(.hljs),
+pre.hljs code > div {
+	padding: 16px;
+	border-radius: 3px;
+	overflow: auto;
+}
+
+pre code {
+	color: var(--vscode-editor-foreground);
+	tab-size: 4;
+}
+
+/** Theming */
+
+.vscode-light pre {
+	background-color: rgba(220, 220, 220, 0.4);
+}
+
+.vscode-dark pre {
+	background-color: rgba(10, 10, 10, 0.4);
+}
+
+.vscode-high-contrast pre {
+	background-color: rgb(0, 0, 0);
+}
+
+.vscode-high-contrast h1 {
+	border-color: rgb(0, 0, 0);
+}
+
+.vscode-light table > thead > tr > th {
+	border-color: rgba(0, 0, 0, 0.69);
+}
+
+.vscode-dark table > thead > tr > th {
+	border-color: rgba(255, 255, 255, 0.69);
+}
+
+.vscode-light h1,
+.vscode-light hr,
+.vscode-light table > tbody > tr + tr > td {
+	border-color: rgba(0, 0, 0, 0.18);
+}
+
+.vscode-dark h1,
+.vscode-dark hr,
+.vscode-dark table > tbody > tr + tr > td {
+	border-color: rgba(255, 255, 255, 0.18);
+}
+
+</style>
+
+<style>
+/* Tomorrow Theme */
+/* http://jmblog.github.com/color-themes-for-google-code-highlightjs */
+/* Original theme - https://github.com/chriskempson/tomorrow-theme */
+
+/* Tomorrow Comment */
+.hljs-comment,
+.hljs-quote {
+	color: #8e908c;
+}
+
+/* Tomorrow Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-regexp,
+.hljs-deletion {
+	color: #c82829;
+}
+
+/* Tomorrow Orange */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params,
+.hljs-meta,
+.hljs-link {
+	color: #f5871f;
+}
+
+/* Tomorrow Yellow */
+.hljs-attribute {
+	color: #eab700;
+}
+
+/* Tomorrow Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+	color: #718c00;
+}
+
+/* Tomorrow Blue */
+.hljs-title,
+.hljs-section {
+	color: #4271ae;
+}
+
+/* Tomorrow Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+	color: #8959a8;
+}
+
+.hljs {
+	display: block;
+	overflow-x: auto;
+	color: #4d4d4c;
+	padding: 0.5em;
+}
+
+.hljs-emphasis {
+	font-style: italic;
+}
+
+.hljs-strong {
+	font-weight: bold;
+}
+</style>
+
+<style>
+/*
+ * Markdown PDF CSS
+ */
+
+ body {
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe WPC", "Segoe UI", "Ubuntu", "Droid Sans", sans-serif, "Meiryo";
+	padding: 0 12px;
+}
+
+pre {
+	background-color: #f8f8f8;
+	border: 1px solid #cccccc;
+	border-radius: 3px;
+	overflow-x: auto;
+	white-space: pre-wrap;
+	overflow-wrap: break-word;
+}
+
+pre:not(.hljs) {
+	padding: 23px;
+	line-height: 19px;
+}
+
+blockquote {
+	background: rgba(127, 127, 127, 0.1);
+	border-color: rgba(0, 122, 204, 0.5);
+}
+
+.emoji {
+	height: 1.4em;
+}
+
+code {
+	font-size: 14px;
+	line-height: 19px;
+}
+
+/* for inline code */
+:not(pre):not(.hljs) > code {
+	color: #C9AE75; /* Change the old color so it seems less like an error */
+	font-size: inherit;
+}
+
+/* Page Break : use <div class="page"/> to insert page break
+-------------------------------------------------------- */
+.page {
+	page-break-after: always;
+}
+
+</style>
+
+<script src="https://unpkg.com/mermaid/dist/mermaid.min.js"></script>
+</head>
+<body>
+  <script>
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: document.body.classList.contains('vscode-dark') || document.body.classList.contains('vscode-high-contrast')
+          ? 'dark'
+          : 'default'
+    });
+  </script>
+<h1 id="preguntas-t%C3%A9cnicas-conectividad-tarjetas-digitales-vhf-p25-y-lc500">Preguntas Técnicas: Conectividad Tarjetas Digitales VHF, P25 y LC500</h1>
+<h2 id="contexto-del-sistema">Contexto del Sistema</h2>
+<h3 id="arquitectura">Arquitectura</h3>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    A["Software de Validación<br/>(Nuestro)"] 
+    
+    subgraph "Sistemas Independientes por Banda"
+        B1["Master Digital Board<br/>(VHF)"]
+        B2["Master Digital Board<br/>(P25)"]
+        B3["Master Digital Board<br/>(LC500)"]
+        
+        C1["Remoto Digital Board<br/>(VHF)"]
+        C2["Remoto Digital Board<br/>(P25)"]
+        C3["Remoto Digital Board<br/>(LC500)"]
+        
+        D1["LNA / PA<br/>(VHF)"]
+        D2["LNA / PA<br/>(P25)"]
+        D3["LNA / PA<br/>(LC500)"]
+    end
+    
+    A -.->|"TCP/IP Puerto 65050"| B1
+    A -.->|"TCP/IP Puerto 65050"| B2
+    A -.->|"TCP/IP Puerto 65050"| B3
+    
+    B1 -.->|"Fibra Óptica"| C1
+    B2 -.->|"Fibra Óptica"| C2
+    B3 -.->|"Fibra Óptica"| C3
+    
+    C1 -.->|"DB9↔IDC-10pin JP1"| D1
+    C2 -.->|"DB9↔IDC-10pin JP1"| D2
+    C3 -.->|"DB9↔IDC-10pin JP1"| D3
+    
+    style A fill:#e1f5fe,color:#000
+    style B1 fill:#e8f5e8,color:#000
+    style B2 fill:#e8f5e8,color:#000
+    style B3 fill:#ffebee,color:#000
+    style C1 fill:#e8f5e8,color:#000
+    style C2 fill:#e8f5e8,color:#000
+    style C3 fill:#ffebee,color:#000
+    style D1 fill:#fff3e0,color:#000
+    style D2 fill:#fff3e0,color:#000
+    style D3 fill:#ffebee,color:#000
+    
+    classDef working stroke:#4caf50,stroke-width:2px,color:#000
+    classDef problem stroke:#f44336,stroke-width:3px,stroke-dasharray: 5 5,color:#000
+    class B1,C1 working
+    class B2,C2 working
+    class B3,C3,D3 problem
+</div></code></pre>
+<p><strong>NOTA</strong>: Cada banda (VHF, P25, LC500) tiene su propio Master Digital Board y funciona como sistema independiente</p>
+<h3 id="versiones-de-software">Versiones de Software</h3>
+<ul>
+<li><strong>VHF</strong>: 231016-BB1-145-15M-16C-OP8 ✅ Compatible TCP</li>
+<li><strong>P25</strong>: 231115-BB1-806D851M-18M-16C-OP8 ✅ Compatible TCP</li>
+<li><strong>LC500</strong>: FPGA:250529-16A, Software:250530-05, Kernel:210909 ❌ No compatible TCP</li>
+</ul>
+<h3 id="componentes-lnapa">Componentes LNA/PA</h3>
+<ul>
+<li><strong>Conexión</strong>: Puerto JP1 pines 5,7 via cable DB9↔IDC-10pin</li>
+<li><strong>Problema</strong>: Software nativo del remoto NO lee parámetros LNA/PA</li>
+<li><strong>Objetivo</strong>: Monitoreo integrado via TCP/IP</li>
+</ul>
+<hr>
+<h2 id="preguntas-t%C3%A9cnicas">Preguntas Técnicas</h2>
+<h3 id="1-monitoreo-lnapa">1. Monitoreo LNA/PA</h3>
+<p><strong>Arquitectura del Problema:</strong></p>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    A["Software de Validación<br/>(Nuestro)"] 
+    B["Master Digital Board<br/>(VHF/P25)"]
+    C["Remoto Digital Board<br/>(VHF/P25)"]
+    D["LNA / PA"]
+    
+    A -.->|"TCP/IP<br/>Puerto 65050"| B
+    B -.->|"Fibra Óptica"| C
+    C -.->|"Cable DB9↔IDC-10pin<br/>Puerto JP1 (pines 5,7)"| D
+    
+    style A fill:#e1f5fe,color:#000
+    style B fill:#f3e5f5,color:#000
+    style C fill:#fff3e0,color:#000
+    style D fill:#ffebee,color:#000
+    
+    classDef problem stroke:#f44336,stroke-width:3px,stroke-dasharray: 5 5,color:#000
+    class D problem
+</div></code></pre>
+<p><strong>PROBLEMA</strong>: Software nativo del remoto NO lee parámetros LNA/PA<br>
+<strong>OBJETIVO</strong>: Monitoreo integrado via TCP/IP</p>
+<p><strong>Preguntas:</strong></p>
+<ul>
+<li>¿Existen comandos específicos en &quot;Protocol _TT_2023_8_30.pdf&quot; para LNA y PA?</li>
+<li>¿Se puede usar puerto 65050 para monitorear LNA/PA?</li>
+<li>¿Por qué el software nativo del remoto no lee parámetros LNA via DB9-IDC 10pin?</li>
+<li>¿Es posible transportar comandos LNA/PA a través de: Master → Fibra → Remoto → TCP/IP?</li>
+<li>¿Se requiere configuración especial en master/remoto para habilitar comunicación LNA/PA?</li>
+<li>¿Los archivos .rar VHF/P25 incluyen comandos de monitoreo para LNA/PA?</li>
+</ul>
+<h3 id="2-compatibilidad-lc500">2. Compatibilidad LC500</h3>
+<p><strong>Arquitectura del Problema:</strong></p>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    A["Software de Validación<br/>(Nuestro)"] 
+    B["Master Digital Board<br/>(LC500)"]
+    C["Remoto Digital Board<br/>(LC500)"]
+    
+    A -.->|"TCP/IP Puerto 65050<br/>❌ No Compatible"| B
+    B -.->|"Fibra Óptica"| C
+    
+    style A fill:#e1f5fe,color:#000
+    style B fill:#ffebee,color:#000
+    style C fill:#ffebee,color:#000
+    
+    classDef incompatible stroke:#f44336,stroke-width:3px,stroke-dasharray: 5 5,color:#000
+    class B,C incompatible
+</div></code></pre>
+<p><strong>PROBLEMA</strong>: LC500 no soporta protocolo TCP Puerto 65050<br>
+<strong>OBJETIVO</strong>: Hacer LC500 compatible con sistema de monitoreo</p>
+<p><strong>Preguntas:</strong></p>
+<ul>
+<li>¿LC500 soporta los mismos comandos TCP que VHF/P25 via fibra óptica?</li>
+<li>¿Es compatible con puerto 65050 en master digital board?</li>
+<li>¿Qué modificaciones requiere LC500 para compatibilidad TCP?</li>
+<li>¿Hay que actualizar LC500 a versiones compatibles con VHF/P25?</li>
+</ul>
+<h3 id="3-estandarizaci%C3%B3n">3. Estandarización</h3>
+<p><strong>Arquitectura de Versiones:</strong></p>
+<pre><code class="language-mermaid"><div class="mermaid">flowchart TD
+    A["Software de Validación<br/>(Sistema Unificado)"]
+    
+    subgraph "Versiones Actuales"
+        V1["VHF<br/>231016-BB1-145-15M-16C-OP8<br/>✅ Funciona"]
+        V2["P25<br/>231115-BB1-806D851M-18M-16C-OP8<br/>✅ Funciona"]
+        V3["LC500<br/>FPGA: 250529-16A<br/>Software: 250530-05<br/>Kernel: 210909<br/>❌ No Compatible"]
+    end
+    
+    subgraph "Objetivo: Versiones Unificadas"
+        U1["VHF Estandarizado<br/>Versión Compatible"]
+        U2["P25 Estandarizado<br/>Versión Compatible"]
+        U3["LC500 Actualizado<br/>Versión Compatible"]
+    end
+    
+    A -.-> V1
+    A -.-> V2
+    A -.-> V3
+    
+    V1 --> U1
+    V2 --> U2
+    V3 --> U3
+    
+    style A fill:#e1f5fe,color:#000
+    style V1 fill:#e8f5e8,color:#000
+    style V2 fill:#e8f5e8,color:#000
+    style V3 fill:#ffebee,color:#000
+    style U1 fill:#f0f4c3,color:#000
+    style U2 fill:#f0f4c3,color:#000
+    style U3 fill:#f0f4c3,color:#000
+    
+    classDef working stroke:#4caf50,stroke-width:2px,color:#000
+    classDef broken stroke:#f44336,stroke-width:2px,color:#000
+    classDef target stroke:#ff9800,stroke-width:2px,stroke-dasharray: 3 3,color:#000
+    class V1,V2 working
+    class V3 broken
+    class U1,U2,U3 target
+</div></code></pre>
+<p><strong>PROBLEMA</strong>: Diferentes versiones complican mantenimiento y compatibilidad<br>
+<strong>OBJETIVO</strong>: Estandarizar versiones para monitoreo unificado</p>
+<p><strong>Preguntas:</strong></p>
+<ul>
+<li>¿Es posible usar las mismas versiones VHF/P25 en todas las tarjetas?</li>
+<li>¿Mejoraría esto la compatibilidad del monitoreo TCP?</li>
+<li>¿Hay implicaciones técnicas en estandarizar versiones?</li>
+</ul>
+<h2 id="comandos-de-monitoreo-requeridos-13-comandos-tcp">Comandos de Monitoreo Requeridos (13 comandos TCP)</h2>
+<ul>
+<li><code>temperature</code> (0x02), <code>device_id</code> (0x97), <code>datt</code> (0x09)</li>
+<li><code>input_and_output_power</code> (0xF3), <code>channel_switch</code> (0x42)</li>
+<li><code>channel_frequency_configuration</code> (0x36), <code>central_frequency_point</code> (0xEB)</li>
+<li><code>subband_bandwidth</code> (0xED), <code>broadband_switching</code> (0x81)</li>
+<li><code>optical_port_switch</code> (0x91), <code>optical_port_status</code> (0x9A)</li>
+<li><code>optical_port_devices_connected_1</code> (0xF8), <code>optical_port_devices_connected_2</code> (0xF9)</li>
+</ul>
+<h2 id="archivos-de-referencia">Archivos de Referencia</h2>
+<ul>
+<li><code>Protocol _TT_2023_8_30.pdf</code> ✅ Protocolo principal (funciona)</li>
+<li><code>Santone module monitor protocol_2023_8_15.pdf</code> ❌ No funciona</li>
+<li><code>VHF - 231016-BB1-145-15M-16C-OP8.rar</code>, <code>P25 - 231115-BB1-806D851M-18M-16C-OP8.rar</code></li>
+<li><code>LNA_VHF_Technical Specification (1).pdf</code></li>
+</ul>
+<hr>
+<p><em>Versión: 2.2 - Diagramas Mermaid por pregunta</em></content>
+<parameter name="filePath">/home/arturo/sw-drsmonitoring/validation-framework/docs/preguntas_conectividad_tarjetas_digitales.md</p>
+
+</body>
+</html>

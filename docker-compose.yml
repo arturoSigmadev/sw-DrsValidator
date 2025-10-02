@@ -1,0 +1,56 @@
+services:
+  drs-validation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: drs-validation:latest
+    container_name: drs-validation-service
+    ports:
+      - "8080:8080"
+    volumes:
+      # Configuration files (can be edited by technicians)
+      - ./src/config:/app/config
+      # Results storage (persistent)
+      - ./results:/app/results
+      # Logs (for debugging)
+      - ./logs:/app/logs
+      # Development: Live code reload (remove in production)
+      - ./src:/app
+    environment:
+      # Site-specific configuration
+      - SITE_ID=${SITE_ID:-development}
+      - ENVIRONMENT=${ENVIRONMENT:-development}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - VALIDATION_MODE=${VALIDATION_MODE:-both}
+      # Python path for imports
+      - PYTHONPATH=/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    networks:
+      - drs-network
+
+  # Optional: Watchtower for automatic updates (production)
+  watchtower:
+    image: containrrr/watchtower
+    container_name: drs-watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: --cleanup --interval 3600 --scope drs-validation
+    restart: unless-stopped
+    profiles:
+      - production
+    networks:
+      - drs-network
+
+networks:
+  drs-network:
+    driver: bridge
+
+volumes:
+  validation-data:
+    driver: local

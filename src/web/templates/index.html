@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRS Device Validation Tool</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 DRS Device Validation Tool</h1>
+            <p class="subtitle">Framework de validación para técnicos de campo</p>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="tab-btn active" data-tab="validation">Validación</button>
+            <button class="tab-btn" data-tab="results">Resultados</button>
+            <button class="tab-btn" data-tab="help">Ayuda</button>
+        </nav>
+
+        <!-- Tab: Validación -->
+        <div id="validation" class="tab-content active">
+            <div class="section">
+                <div class="validation-layout">
+                    <!-- Columna Izquierda: Configuración -->
+                    <div class="config-column">
+                        <div class="config-card">
+                            <div class="card-header">
+                                <h3>⚙️ Configuración de Dispositivo</h3>
+                            </div>
+                            <div class="card-content">
+                                <form id="validationForm">
+                                    <div class="form-group">
+                                        <label for="scenarioSelect">Escenario de Validación:</label>
+                                        <select id="scenarioSelect" name="scenario_id" required>
+                                            <option value="">Seleccionar escenario...</option>
+                                            <option value="dmu_basic_check">DMU Basic Communication Test</option>
+                                            <option value="dru_remote_check">DRU Remote Device Test</option>
+                                            <option value="batch_remote_commands">Batch Remote Commands</option>
+                                            <option value="device_discovery">Device Discovery Process</option>
+                                            <option value="drs_master_batch">DRS Master Batch Commands</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="deviceIp">Dirección IP del Dispositivo:</label>
+                                        <input type="text" id="deviceIp" name="ip_address" placeholder="192.168.11.22" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="deviceHostname">Nombre del Dispositivo:</label>
+                                        <input type="text" id="deviceHostname" name="hostname" placeholder="dmu">
+                                    </div>
+
+                                    <div class="form-group validation-mode-compact">
+                                        <label>Modo de Validación:</label>
+                                        <div class="radio-group-compact">
+                                            <input type="radio" id="mockMode" name="mode" value="mock" checked>
+                                            <label for="mockMode">🧪 Mock</label>
+                                            
+                                            <input type="radio" id="liveMode" name="mode" value="live">
+                                            <label for="liveMode">🔗 Live</label>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-actions">
+                                        <button type="submit" class="btn-primary" id="runValidationBtn">
+                                            🚀 Ejecutar Validación
+                                        </button>
+                                        <button type="button" class="btn-secondary" id="saveConfigBtn">
+                                            💾 Guardar Configuración
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Columna Derecha: Resultados -->
+                    <div class="results-column">
+                        <!-- Área de resultados -->
+                        <div id="resultsArea" class="results-card" style="display: none;">
+                            <div class="card-header">
+                                <h3>📊 Resultados de Validación</h3>
+                            </div>
+                            <div class="card-content">
+                                <div id="validationResults" class="results-container">
+                                    <!-- Los resultados se mostrarán aquí dinámicamente -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Resultados -->
+        <div id="results" class="tab-content">
+            <div class="section">
+                <h2>Historial de Resultados</h2>
+                <div id="resultsHistory" class="results-history">
+                    <p>Funcionalidad en desarrollo...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab: Ayuda -->
+        <div id="help" class="tab-content">
+            <div class="section">
+                <h2>Guía de Uso</h2>
+                <div class="help-content">
+                    <h3>🎯 Modos de Validación</h3>
+                    <ul>
+                        <li><strong>Mock Mode:</strong> Simula la comunicación con dispositivos. Útil para validar la instalación sin hardware conectado.</li>
+                        <li><strong>Live Mode:</strong> Se conecta a dispositivos reales. Requiere que el dispositivo esté conectado y encendido.</li>
+                    </ul>
+
+                    <h3>📋 Escenarios Disponibles</h3>
+                    <ul>
+                        <li><strong>DMU Basic Communication:</strong> Prueba básica de comunicación con dispositivo DMU</li>
+                        <li><strong>DRU Remote Device:</strong> Validación de dispositivo DRU remoto</li>
+                        <li><strong>Device Discovery:</strong> Proceso de descubrimiento automático</li>
+                    </ul>
+
+                    <h3>🔧 Solución de Problemas</h3>
+                    <ul>
+                        <li><strong>Timeout de conexión:</strong> Verificar cables de red y alimentación del dispositivo</li>
+                        <li><strong>IP no alcanzable:</strong> Comprobar configuración de red y direcciones IP</li>
+                        <li><strong>Respuesta inválida:</strong> Contactar soporte técnico</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>DRS Validation Framework v1.0.0 | 
+            <a href="/api/docs" target="_blank">API Docs</a> | 
+            <a href="/health" target="_blank">Health Check</a></p>
+        </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <script>
+        // Initialize batch commands functionality when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof setupBatchCommandsForm === 'function') {
+                console.log('✅ Batch commands functionality loaded');
+            } else {
+                console.warn('⚠️ Batch commands functionality not available');
+            }
+        });
+    </script>
+</body>
+</html>
