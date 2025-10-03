@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DRS Device Validation Tool</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom Modern Styles -->
+    <link rel="stylesheet" href="/static/style-modern.css">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <a href="#" class="sidebar-brand">
+                <i class="bi bi-gear-fill me-2"></i>
+                DRS Validator
+            </a>
+        </div>
+        <div class="sidebar-nav">
+            <a href="#validation" class="sidebar-nav-item active" data-tab="validation">
+                <i class="bi bi-check-circle sidebar-nav-icon"></i>
+                Validación
+            </a>
+            <a href="#results" class="sidebar-nav-item" data-tab="results">
+                <i class="bi bi-clipboard-data sidebar-nav-icon"></i>
+                Resultados
+            </a>
+            <a href="#batch" class="sidebar-nav-item" data-tab="batch">
+                <i class="bi bi-layers sidebar-nav-icon"></i>
+                Comandos Batch
+            </a>
+            <a href="#monitoring" class="sidebar-nav-item" data-tab="monitoring">
+                <i class="bi bi-activity sidebar-nav-icon"></i>
+                Monitoreo
+            </a>
+            <a href="#help" class="sidebar-nav-item" data-tab="help">
+                <i class="bi bi-question-circle sidebar-nav-icon"></i>
+                Ayuda
+            </a>
+        </div>
+    </nav>
+
+    <!-- Main Content Area -->
+    <main class="main-content sidebar-open" id="mainContent">
+        <!-- Top Navigation Bar -->
+        <div class="topbar">
+            <div class="topbar-left">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="bi bi-list"></i>
+                </button>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#">DRS Validator</a></li>
+                        <li class="breadcrumb-item active" aria-current="page" id="currentPage">Validación</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="topbar-right">
+                <span class="status-indicator status-success">
+                    <i class="bi bi-circle-fill"></i>
+                    Sistema Activo
+                </span>
+            </div>
+        </div>
+
+        <!-- Page Content -->
+        <div class="container-fluid p-4">
+            <!-- Validation Tab -->
+            <div id="validation" class="tab-content active">
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="card-modern">
+                            <div class="card-header d-flex align-items-center justify-content-between">
+                                <h4 class="m-0">
+                                    <i class="bi bi-gear-fill text-primary me-2"></i>
+                                    Configuración de Dispositivo
+                                </h4>
+                                <span class="badge bg-primary">Nueva Validación</span>
+                            </div>
+                            <div class="card-body">
+                                <form id="validationForm" class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group-modern">
+                                            <label for="scenarioSelect" class="form-label-modern">
+                                                <i class="bi bi-list-check me-1"></i>
+                                                Escenario de Validación
+                                            </label>
+                                            <select id="scenarioSelect" name="scenario_id" class="form-control-modern" required>
+                                                <option value="">Seleccionar escenario...</option>
+                                                <option value="dmu_basic_check">DMU Basic Communication Test</option>
+                                                <option value="dru_remote_check">DRU Remote Device Test</option>
+                                                <option value="batch_remote_commands">Batch Remote Commands</option>
+                                                <option value="device_discovery">Device Discovery Process</option>
+                                                <option value="drs_master_batch">DRS Master Batch Commands</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="form-group-modern">
+                                            <label for="deviceIp" class="form-label-modern">
+                                                <i class="bi bi-router me-1"></i>
+                                                Dirección IP del Dispositivo
+                                            </label>
+                                            <input type="text" id="deviceIp" name="ip_address" 
+                                                   class="form-control-modern" 
+                                                   placeholder="192.168.11.22" 
+                                                   pattern="^(?:[0-9]{1,3}\.){3}[0-9]{1,3}$"
+                                                   required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group-modern">
+                                            <label for="devicePort" class="form-label-modern">
+                                                <i class="bi bi-plug me-1"></i>
+                                                Puerto
+                                            </label>
+                                            <input type="number" id="devicePort" name="port" 
+                                                   class="form-control-modern" 
+                                                   value="502" min="1" max="65535" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group-modern">
+                                            <label for="timeout" class="form-label-modern">
+                                                <i class="bi bi-clock me-1"></i>
+                                                Timeout (segundos)
+                                            </label>
+                                            <input type="number" id="timeout" name="timeout" 
+                                                   class="form-control-modern" 
+                                                   value="10" min="1" max="300" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="d-flex gap-3 justify-content-end">
+                                            <button type="button" class="btn-modern btn-secondary" id="preValidateBtn">
+                                                <i class="bi bi-search me-2"></i>
+                                                Pre-validar Conexión
+                                            </button>
+                                            <button type="submit" class="btn-modern btn-primary" id="startValidationBtn">
+                                                <i class="bi bi-play-circle-fill me-2"></i>
+                                                Iniciar Validación
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation Progress Section -->
+                <div class="row" id="validationProgress" style="display: none;">
+                    <div class="col-12 mb-4">
+                        <div class="card-modern">
+                            <div class="card-header">
+                                <h5 class="m-0">
+                                    <i class="bi bi-hourglass-split text-warning me-2"></i>
+                                    Progreso de Validación
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="progress-modern mb-3">
+                                    <div class="progress-bar-modern" id="progressBar" style="width: 0%"></div>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span id="progressText">Iniciando validación...</span>
+                                    <span id="progressPercent">0%</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Output Section -->
+                <div class="row" id="liveOutputSection" style="display: none;">
+                    <div class="col-12">
+                        <div class="card-modern">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="m-0">
+                                    <i class="bi bi-terminal text-info me-2"></i>
+                                    Salida en Tiempo Real
+                                </h5>
+                                <button class="btn-modern btn-secondary btn-sm" id="clearOutputBtn">
+                                    <i class="bi bi-trash3 me-1"></i>
+                                    Limpiar
+                                </button>
+                            </div>
+                            <div class="card-body p-0">
+                                <div id="liveOutput" class="bg-dark text-light p-4" 
+                                     style="height: 300px; overflow-y: auto; font-family: 'Consolas', monospace; font-size: 14px;">
+                                    <div class="text-success">DRS Validator v2.0 - Ready</div>
+                                    <div class="text-muted">Esperando comandos...</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Tab -->
+            <div id="results" class="tab-content" style="display: none;">
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="card-modern">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4 class="m-0">
+                                    <i class="bi bi-clipboard-data text-primary me-2"></i>
+                                    Historial de Validaciones
+                                </h4>
+                                <button class="btn-modern btn-primary" id="exportResultsBtn">
+                                    <i class="bi bi-download me-2"></i>
+                                    Exportar Resultados
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th>Fecha/Hora</th>
+                                                <th>Dispositivo</th>
+                                                <th>Escenario</th>
+                                                <th>Estado</th>
+                                                <th>Duración</th>
+                                                <th>Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="resultsTableBody">
+                                            <tr>
+                                                <td colspan="6" class="text-center text-muted py-4">
+                                                    <i class="bi bi-inbox display-6 d-block mb-2"></i>
+                                                    No hay validaciones disponibles
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Batch Commands Tab -->
+            <div id="batch" class="tab-content" style="display: none;">
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="card-modern">
+                            <div class="card-header">
+                                <h4 class="m-0">
+                                    <i class="bi bi-layers text-primary me-2"></i>
+                                    Comandos Batch
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group-modern">
+                                            <label for="batchFile" class="form-label-modern">
+                                                <i class="bi bi-file-text me-1"></i>
+                                                Archivo de Comandos
+                                            </label>
+                                            <input type="file" id="batchFile" class="form-control-modern" 
+                                                   accept=".txt,.json,.csv">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="d-flex align-items-end h-100">
+                                            <button class="btn-modern btn-primary" id="uploadBatchBtn">
+                                                <i class="bi bi-upload me-2"></i>
+                                                Cargar y Ejecutar
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monitoring Tab -->
+            <div id="monitoring" class="tab-content" style="display: none;">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="card-modern">
+                            <div class="card-header">
+                                <h5 class="m-0">
+                                    <i class="bi bi-cpu text-primary me-2"></i>
+                                    Estado del Sistema
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span>CPU Usage</span>
+                                    <span class="font-semibold">12%</span>
+                                </div>
+                                <div class="progress-modern mb-3">
+                                    <div class="progress-bar-modern" style="width: 12%"></div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <span>Memory Usage</span>
+                                    <span class="font-semibold">34%</span>
+                                </div>
+                                <div class="progress-modern">
+                                    <div class="progress-bar-modern" style="width: 34%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="card-modern">
+                            <div class="card-header">
+                                <h5 class="m-0">
+                                    <i class="bi bi-wifi text-primary me-2"></i>
+                                    Conectividad
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex align-items-center mb-3">
+                                    <span class="status-indicator status-success me-3">
+                                        <i class="bi bi-circle-fill"></i>
+                                        Red Principal
+                                    </span>
+                                    <span class="text-muted">192.168.1.0/24</span>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <span class="status-indicator status-warning me-3">
+                                        <i class="bi bi-circle-fill"></i>
+                                        Red Dispositivos
+                                    </span>
+                                    <span class="text-muted">192.168.11.0/24</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Help Tab -->
+            <div id="help" class="tab-content" style="display: none;">
+                <div class="row">
+                    <div class="col-12 mb-4">
+                        <div class="card-modern">
+                            <div class="card-header">
+                                <h4 class="m-0">
+                                    <i class="bi bi-question-circle text-primary me-2"></i>
+                                    Guía de Usuario
+                                </h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row g-4">
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <i class="bi bi-1-circle display-4 text-primary mb-3"></i>
+                                            <h5>Configuración</h5>
+                                            <p class="text-muted">Configure la IP del dispositivo y seleccione el escenario de validación.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <i class="bi bi-2-circle display-4 text-primary mb-3"></i>
+                                            <h5>Validación</h5>
+                                            <p class="text-muted">Ejecute las pruebas y monitoree el progreso en tiempo real.</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="text-center">
+                                            <i class="bi bi-3-circle display-4 text-primary mb-3"></i>
+                                            <h5>Resultados</h5>
+                                            <p class="text-muted">Revise los resultados y exporte los reportes.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/static/app-modern.js"></script>
+    <script src="/static/app.js"></script>
+</body>
+</html>
